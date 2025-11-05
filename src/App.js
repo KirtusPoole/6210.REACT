@@ -122,7 +122,7 @@ function App() {
       </p>
       <p>Feel free to add new SCPs or update existing ones!</p>
     </div>
-  }
+   }
 />
 
             <Route path="/scp/:id" element={<ViewScp />} />
