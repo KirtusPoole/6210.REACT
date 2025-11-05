@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { supabase } from './supabaseClient';
+import { useNavigate } from 'react-router-dom';
 
 function CreateScp() {
+  const navigate = useNavigate();
   const [newScp, setNewScp] = useState({
     'scp-id': '',
     'object-class': '',
@@ -10,11 +12,13 @@ function CreateScp() {
   });
 
   const handleAdd = async () => {
+    if (!newScp['scp-id']) return alert('SCP ID is required!');
     const { error } = await supabase.from('scp-data').insert([newScp]);
     if (error) console.error('Error adding SCP:', error);
     else {
       alert('New SCP added!');
       setNewScp({ 'scp-id': '', 'object-class': '', description: '', containment: '' });
+      navigate('/'); // Go back to home page
     }
   };
 
@@ -53,6 +57,7 @@ function CreateScp() {
   );
 }
 
+// Styles
 const boxStyle = {
   background: '#f2f2f2',
   padding: '15px',

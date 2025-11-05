@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 import './App.css';
@@ -8,6 +8,8 @@ import CreateScp from './CreateScp';
 function App() {
   const [scps, setScps] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     fetchScps();
@@ -35,96 +37,76 @@ function App() {
     }
   };
 
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const toggleMobileSidebar = () => setMobileOpen(!mobileOpen);
+
   return (
     <BrowserRouter>
-      <div style={{ display: 'flex', height: '100vh', fontFamily: 'Arial, sans-serif' }}>
+      <div className="app-container">
+        {/* Mobile overlay */}
+        {mobileOpen && <div className="mobile-overlay" onClick={() => setMobileOpen(false)} />}
+
         {/* Sidebar */}
-        <nav style={{ width: '250px', background: '#282c34', color: 'white', padding: '10px', overflowY: 'auto' }}>
-          <h2 style={{ textAlign: 'center' }}>SCP List</h2>
+        <nav className={`sidebar ${sidebarOpen ? 'open' : 'collapsed'}`}>
+          <h2 className="sidebar-title">SCP</h2>
+          <button className="sidebar-toggle" onClick={toggleSidebar}>
+            {sidebarOpen ? '⬅️' : '➡️'}
+          </button>
 
-          <Link
-            to="/create"
-            style={{
-              display: 'block',
-              background: '#4CAF50',
-              color: '#fff',
-              textDecoration: 'none',
-              padding: '8px',
-              borderRadius: '5px',
-              textAlign: 'center',
-              marginBottom: '10px'
-            }}
-          >
-            ➕ Create New SCP
-          </Link>
+          {sidebarOpen && (
+            <>
+              <Link className="sidebar-link create" to="/create">➕ Create New SCP</Link>
+              <Link className="sidebar-link home" to="/">🏠 Home</Link>
 
-          <Link
-            to="/"
-            style={{
-              display: 'block',
-              background: '#61dafb',
-              color: '#000',
-              textDecoration: 'none',
-              padding: '8px',
-              borderRadius: '5px',
-              textAlign: 'center',
-              marginBottom: '10px'
-            }}
-          >
-            🏠 Home
-          </Link>
-
-          {loading ? (
-            <p>Loading...</p>
-          ) : scps.length === 0 ? (
-            <p>No SCPs found</p>
-          ) : (
-            scps.map((scp) => (
-              <Link
-                key={scp.id}
-                to={`/scp/${scp.id}`}
-                style={{
-                  padding: '8px',
-                  marginBottom: '5px',
-                  borderRadius: '5px',
-                  textDecoration: 'none',
-                  background: '#444',
-                  color: 'white',
-                  display: 'block'
-                }}
-              >
-                {scp['scp-id']}
-              </Link>
-            ))
+              {loading ? (
+                <p>Loading...</p>
+              ) : scps.length === 0 ? (
+                <p>No SCPs found</p>
+              ) : (
+                scps.map((scp) => (
+                  <Link key={scp.id} className="sidebar-link scp" to={`/scp/${scp.id}`}>
+                    {scp['scp-id']}
+                  </Link>
+                ))
+              )}
+            </>
           )}
         </nav>
 
-        {/* Main Content */}
-        <main style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
+        {/* Mobile sidebar */}
+        {mobileOpen && (
+          <nav className="mobile-sidebar">
+            <button className="mobile-close" onClick={toggleMobileSidebar}>✖ Close</button>
+            <Link className="sidebar-link create" to="/create" onClick={() => setMobileOpen(false)}>➕ Create New SCP</Link>
+            <Link className="sidebar-link home" to="/" onClick={() => setMobileOpen(false)}>🏠 Home</Link>
+            {loading && <p>Loading...</p>}
+            {!loading && scps.map((scp) => (
+              <Link key={scp.id} className="sidebar-link scp" to={`/scp/${scp.id}`} onClick={() => setMobileOpen(false)}>
+                {scp['scp-id']}
+              </Link>
+            ))}
+          </nav>
+        )}
+
+        {/* Hamburger for mobile */}
+        <button className="mobile-hamburger" onClick={toggleMobileSidebar}>☰</button>
+
+        {/* Main content */}
+        <main className="main-content">
           <Routes>
             <Route
-  path="/"
-  element={
-    <div style={{
-      textAlign: 'center',
-      padding: '50px',
-      background: '#f2f2f2',
-      borderRadius: '10px',
-      margin: '20px',
-      fontSize: '1.2rem',
-      lineHeight: '1.6',
-      color: '#333'
-    }}>
-      <h1>Welcome to the SCP Database</h1>
-      <p>
-        Explore detailed entries of the most popular SCPs. <br />
-        Click on an SCP from the sidebar to view its object class, containment procedures, and description.
-      </p>
-      <p>Feel free to add new SCPs or update existing ones!</p>
-    </div>
-   }
-/>
-
+              path="/"
+              element={
+                <div className="home-box">
+                  <h1>Welcome to the SCP Database</h1>
+                  <p>
+                    Explore detailed entries of the most popular SCPs. <br />
+                    Click on an SCP from the sidebar to view its object class, containment procedures, and description.
+                  </p>
+                  <p>Feel free to add new SCPs or update existing ones!</p>
+                </div>
+              }
+            />
             <Route path="/scp/:id" element={<ViewScp />} />
             <Route path="/create" element={<CreateScp />} />
           </Routes>

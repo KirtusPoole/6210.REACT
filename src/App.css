@@ -1,41 +1,123 @@
-.App-body {
-  padding: 20px;
+/* App Container */
+.app-container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
 }
 
-.App-nav {
-  margin-bottom: 20px;
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: #282c34;
+  color: white;
+  padding: 10px;
+  transition: width 0.3s;
+  overflow-y: hidden;
+  flex-shrink: 0;
+  z-index: 20;
 }
 
-.App-link {
-  color: #61dafb;
-  text-decoration: none;
-  display: block;
-  margin: 3px 0;
+.sidebar.collapsed {
+  width: 60px;
 }
 
-.App-link:hover {
-  text-decoration: underline;
+.sidebar-title {
+  text-align: center;
+  font-size: 1.5rem;
 }
 
-.App-input {
+.sidebar.collapsed .sidebar-title {
+  font-size: 1rem;
+}
+
+.sidebar-toggle {
   width: 100%;
-  max-width: 400px;
+  margin-bottom: 10px;
   padding: 5px;
-  margin: 3px 0;
-}
-
-.App-button {
-  padding: 5px 10px;
-  margin-top: 5px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.App-image {
-  max-width: 300px;
-  margin-top: 10px;
+/* Sidebar Links */
+.sidebar-link {
+  display: block;
+  padding: 8px;
+  border-radius: 5px;
+  text-decoration: none;
+  text-align: center;
+  margin-bottom: 5px;
+  color: white;
 }
 
-.App-create, .App-detail {
-  margin-bottom: 20px;
-  text-align: left;
+.sidebar-link.create { background: #4CAF50; }
+.sidebar-link.home { background: #61dafb; color: black; }
+.sidebar-link.scp { background: #444; }
+
+/* Mobile Sidebar */
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.3);
+  z-index: 10;
+}
+
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background: #282c34;
+  color: white;
+  padding: 10px;
+  overflow-y: auto;
+  z-index: 20;
+}
+
+.mobile-close {
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+/* Hamburger */
+.mobile-hamburger {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 30;
+  background: #61dafb;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  display: none;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Home Box */
+.home-box {
+  text-align: center;
+  padding: 50px;
+  background: #f2f2f2;
+  border-radius: 10px;
+  margin: 20px;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mobile-hamburger { display: block; }
+  .sidebar { display: none; }
 }
