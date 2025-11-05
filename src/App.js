@@ -102,7 +102,29 @@ function App() {
         {/* Main Content */}
         <main style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
           <Routes>
-            <Route path="/" element={<p>Select an SCP from the list.</p>} />
+            <Route
+  path="/"
+  element={
+    <div style={{
+      textAlign: 'center',
+      padding: '50px',
+      background: '#f2f2f2',
+      borderRadius: '10px',
+      margin: '20px',
+      fontSize: '1.2rem',
+      lineHeight: '1.6',
+      color: '#333'
+    }}>
+      <h1>Welcome to the SCP Database</h1>
+      <p>
+        Explore detailed entries of the most popular SCPs. <br />
+        Click on an SCP from the sidebar to view its object class, containment procedures, and description.
+      </p>
+      <p>Feel free to add new SCPs or update existing ones!</p>
+    </div>
+  }
+/>
+
             <Route path="/scp/:id" element={<ViewScp />} />
             <Route path="/create" element={<CreateScp />} />
           </Routes>
