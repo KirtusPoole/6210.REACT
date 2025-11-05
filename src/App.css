@@ -1,0 +1,41 @@
+.App-body {
+  padding: 20px;
+}
+
+.App-nav {
+  margin-bottom: 20px;
+}
+
+.App-link {
+  color: #61dafb;
+  text-decoration: none;
+  display: block;
+  margin: 3px 0;
+}
+
+.App-link:hover {
+  text-decoration: underline;
+}
+
+.App-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 5px;
+  margin: 3px 0;
+}
+
+.App-button {
+  padding: 5px 10px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+.App-image {
+  max-width: 300px;
+  margin-top: 10px;
+}
+
+.App-create, .App-detail {
+  margin-bottom: 20px;
+  text-align: left;
+}
