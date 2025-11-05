@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 import './App.css';
@@ -8,8 +8,8 @@ import CreateScp from './CreateScp';
 function App() {
   const [scps, setScps] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // for mobile
 
   useEffect(() => {
     fetchScps();
@@ -37,67 +37,61 @@ function App() {
     }
   };
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-  const toggleMobileSidebar = () => setMobileOpen(!mobileOpen);
-
   return (
     <BrowserRouter>
       <div className="app-container">
-        {/* Mobile overlay */}
-        {mobileOpen && <div className="mobile-overlay" onClick={() => setMobileOpen(false)} />}
-
         {/* Sidebar */}
-        <nav className={`sidebar ${sidebarOpen ? 'open' : 'collapsed'}`}>
-          <h2 className="sidebar-title">SCP</h2>
-          <button className="sidebar-toggle" onClick={toggleSidebar}>
-            {sidebarOpen ? '⬅️' : '➡️'}
-          </button>
+        <nav className={`sidebar ${collapsed ? 'collapsed' : ''} ${sidebarOpen ? 'open' : ''}`}>
+          <div className="sidebar-header">
+            <h2>SCP List</h2>
+            <button
+              className="toggle-btn"
+              onClick={() => {
+                if (window.innerWidth <= 768) setSidebarOpen(false);
+                else setCollapsed(!collapsed);
+              }}
+            >
+              {collapsed ? '➡️' : '⬅️'}
+            </button>
+          </div>
 
-          {sidebarOpen && (
-            <>
-              <Link className="sidebar-link create" to="/create">➕ Create New SCP</Link>
-              <Link className="sidebar-link home" to="/">🏠 Home</Link>
+          <Link to="/create" className="sidebar-link create" onClick={() => setSidebarOpen(false)}>
+            ➕ <span>Create New SCP</span>
+          </Link>
+          <Link to="/" className="sidebar-link home" onClick={() => setSidebarOpen(false)}>
+            🏠 <span>Home</span>
+          </Link>
 
-              {loading ? (
-                <p>Loading...</p>
-              ) : scps.length === 0 ? (
-                <p>No SCPs found</p>
-              ) : (
-                scps.map((scp) => (
-                  <Link key={scp.id} className="sidebar-link scp" to={`/scp/${scp.id}`}>
-                    {scp['scp-id']}
-                  </Link>
-                ))
-              )}
-            </>
+          {loading ? (
+            <p>Loading...</p>
+          ) : scps.length === 0 ? (
+            <p>No SCPs found</p>
+          ) : (
+            scps.map((scp) => (
+              <Link
+                key={scp.id}
+                to={`/scp/${scp.id}`}
+                className="sidebar-link scp-item"
+                onClick={() => setSidebarOpen(false)}
+              >
+                🗂 <span>{scp['scp-id']}</span>
+              </Link>
+            ))
           )}
         </nav>
 
-        {/* Mobile sidebar */}
-        {mobileOpen && (
-          <nav className="mobile-sidebar">
-            <button className="mobile-close" onClick={toggleMobileSidebar}>✖ Close</button>
-            <Link className="sidebar-link create" to="/create" onClick={() => setMobileOpen(false)}>➕ Create New SCP</Link>
-            <Link className="sidebar-link home" to="/" onClick={() => setMobileOpen(false)}>🏠 Home</Link>
-            {loading && <p>Loading...</p>}
-            {!loading && scps.map((scp) => (
-              <Link key={scp.id} className="sidebar-link scp" to={`/scp/${scp.id}`} onClick={() => setMobileOpen(false)}>
-                {scp['scp-id']}
-              </Link>
-            ))}
-          </nav>
-        )}
+        {/* Mobile Toggle Button */}
+        <button className="mobile-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+          ☰
+        </button>
 
-        {/* Hamburger for mobile */}
-        <button className="mobile-hamburger" onClick={toggleMobileSidebar}>☰</button>
-
-        {/* Main content */}
-        <main className="main-content">
+        {/* Main Content */}
+        <main className={`main-content ${sidebarOpen ? 'dimmed' : ''}`} onClick={() => setSidebarOpen(false)}>
           <Routes>
             <Route
               path="/"
               element={
-                <div className="home-box">
+                <div className="home-content">
                   <h1>Welcome to the SCP Database</h1>
                   <p>
                     Explore detailed entries of the most popular SCPs. <br />

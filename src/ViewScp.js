@@ -11,19 +11,23 @@ function ViewScp() {
   const [editData, setEditData] = useState({});
 
   useEffect(() => {
+    const fetchScp = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('scp-data')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (error) console.error('Error fetching SCP:', error);
+      else {
+        setScp(data);
+        setEditData(data);
+      }
+      setLoading(false);
+    };
+
     fetchScp();
   }, [id]);
-
-  const fetchScp = async () => {
-    setLoading(true);
-    const { data, error } = await supabase.from('scp-data').select('*').eq('id', id).single();
-    if (error) console.error('Error fetching SCP:', error);
-    else {
-      setScp(data);
-      setEditData(data);
-    }
-    setLoading(false);
-  };
 
   const handleUpdate = async () => {
     const { error } = await supabase.from('scp-data').update(editData).eq('id', id);
@@ -33,9 +37,7 @@ function ViewScp() {
     } else {
       alert('SCP updated!');
       setIsEditing(false);
-
-      // If scp-id changed, refresh page URL to reflect the new entry if needed
-      fetchScp();
+      window.scrollTo(0, 0);
     }
   };
 
@@ -54,132 +56,83 @@ function ViewScp() {
 
   return (
     <div>
-      <h1 style={{ textAlign: 'center' }}>{scp['scp-id']}</h1>
+      <h1 style={{ textAlign: 'center', marginBottom: '15px' }}>{scp['scp-id']}</h1>
 
       {isEditing ? (
         <>
-          <div style={boxStyle}>
+          <div className="scp-box">
             <h3>SCP ID</h3>
             <input
               type="text"
+              className="scp-input"
               value={editData['scp-id'] || ''}
               onChange={(e) => setEditData({ ...editData, 'scp-id': e.target.value })}
-              style={inputStyle}
             />
           </div>
 
-          <div style={boxStyle}>
+          <div className="scp-box">
             <h3>Object Class</h3>
             <input
               type="text"
+              className="scp-input"
               value={editData['object-class'] || ''}
               onChange={(e) => setEditData({ ...editData, 'object-class': e.target.value })}
-              style={inputStyle}
             />
           </div>
 
-          <div style={boxStyle}>
+          <div className="scp-box">
             <h3>Description</h3>
             <textarea
+              className="scp-textarea"
               value={editData.description || ''}
               onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-              style={textAreaStyle}
             />
           </div>
 
-          <div style={boxStyle}>
+          <div className="scp-box">
             <h3>Containment</h3>
             <textarea
+              className="scp-textarea"
               value={editData.containment || ''}
               onChange={(e) => setEditData({ ...editData, containment: e.target.value })}
-              style={textAreaStyle}
             />
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <button onClick={handleUpdate} style={btnPrimary}>💾 Save</button>
-            <button onClick={() => setIsEditing(false)} style={btnCancel}>✖ Cancel</button>
+            <button onClick={handleUpdate} className="btn-primary">💾 Save</button>
+            <button onClick={() => setIsEditing(false)} className="btn-cancel">✖ Cancel</button>
           </div>
         </>
       ) : (
         <>
-          <div style={boxStyle}>
+          <div className="scp-box">
             <h3>SCP ID</h3>
-            <p>{scp['scp-id']}</p>
-          </div>
-          <div style={boxStyle}>
-            <h3>Object Class</h3>
-            <p>{scp['object-class']}</p>
-          </div>
-          <div style={boxStyle}>
-            <h3>Description</h3>
-            <p style={{ textAlign: 'justify' }}>{scp.description}</p>
-          </div>
-          <div style={boxStyle}>
-            <h3>Containment</h3>
-            <p style={{ textAlign: 'justify' }}>{scp.containment}</p>
+            <p className="scp-text">{scp['scp-id']}</p>
           </div>
 
-          <div style={{ textAlign: 'center' }}>
-            <button onClick={() => setIsEditing(true)} style={btnPrimary}>✏️ Edit</button>
-            <button onClick={handleDelete} style={btnDanger}>🗑️ Delete</button>
+          <div className="scp-box">
+            <h3>Object Class</h3>
+            <p className="scp-text">{scp['object-class']}</p>
+          </div>
+
+          <div className="scp-box">
+            <h3>Description</h3>
+            <p className="scp-text">{scp.description}</p>
+          </div>
+
+          <div className="scp-box">
+            <h3>Containment</h3>
+            <p className="scp-text">{scp.containment}</p>
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '10px' }}>
+            <button onClick={() => setIsEditing(true)} className="btn-primary">✏️ Edit</button>
+            <button onClick={handleDelete} className="btn-danger">🗑️ Delete</button>
           </div>
         </>
       )}
     </div>
   );
 }
-
-const boxStyle = {
-  background: '#f2f2f2',
-  padding: '15px',
-  marginBottom: '15px',
-  borderRadius: '8px',
-};
-
-const inputStyle = {
-  width: '100%',
-  padding: '8px',
-  borderRadius: '4px',
-  border: '1px solid #ccc',
-};
-
-const textAreaStyle = {
-  width: '100%',
-  minHeight: '100px',
-  padding: '8px',
-  borderRadius: '4px',
-  border: '1px solid #ccc',
-  resize: 'vertical',
-  textAlign: 'justify',
-};
-
-const btnPrimary = {
-  background: '#4CAF50',
-  color: 'white',
-  padding: '10px 15px',
-  border: 'none',
-  borderRadius: '5px',
-  marginRight: '10px',
-  cursor: 'pointer',
-};
-
-const btnDanger = {
-  background: '#d9534f',
-  color: 'white',
-  padding: '10px 15px',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer',
-};
-
-const btnCancel = {
-  background: '#999',
-  color: 'white',
-  padding: '10px 15px',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer',
-};
 
 export default ViewScp;
